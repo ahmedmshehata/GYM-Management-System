@@ -16,9 +16,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\GymPro.Data\GymPro.Data.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- Real legacy databases from the old app, used by the import tests. -->
-    <None Include="..\..\..\v2\db_at.db" Link="Legacy\v2_db_at.db" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\..\Database\db_at.db" Link="Legacy\database_db_at.db" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>

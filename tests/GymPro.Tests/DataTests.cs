@@ -137,13 +137,13 @@ public class PreferenceTests
 
 public class LegacyImportTests
 {
-    private static string Legacy(string name) => Path.Combine(AppContext.BaseDirectory, "Legacy", name);
 
     [Fact]
     public async Task Imports_v2_plans_with_arabic_names_and_session_packs()
     {
         await using var t = await TestDb.CreateAsync();
-        var report = await t.Importer().ImportAsync(Legacy("v2_db_at.db"), ct: TestContext.Current.CancellationToken);
+        var file = LegacyFixture.CreatePlansOnly();
+        var report = await t.Importer().ImportAsync(file, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal(10, report.PlansImported);
         var plans = await t.Plans().ListAsync(false, TestContext.Current.CancellationToken);
@@ -157,12 +157,14 @@ public class LegacyImportTests
     public async Task Imports_members_with_base64_photo_subscriptions_attendance_and_is_idempotent()
     {
         await using var t = await TestDb.CreateAsync();
-        var first = await t.Importer().ImportAsync(Legacy("database_db_at.db"), ct: TestContext.Current.CancellationToken);
+        var file = LegacyFixture.CreateWithMember();
+        var first = await t.Importer().ImportAsync(file, ct: TestContext.Current.CancellationToken);
 
         Assert.Equal(1, first.MembersImported);
         Assert.Equal(1, first.PhotosImported);
         Assert.Equal(1, first.SubscriptionsImported);
         Assert.Equal(1, first.AttendancesImported);
+        Assert.Equal(1, first.SkipReasons["Attendance: same-day duplicate check-in"]); // the old app allowed double clicks
 
         await using (var db = t.Context())
         {
@@ -175,7 +177,7 @@ public class LegacyImportTests
             Assert.Equal(1, await db.AuditLogs.CountAsync(a => a.Action == AuditAction.Import, TestContext.Current.CancellationToken));
         }
 
-        var second = await t.Importer().ImportAsync(Legacy("database_db_at.db"), ct: TestContext.Current.CancellationToken);
+        var second = await t.Importer().ImportAsync(file, ct: TestContext.Current.CancellationToken);
         Assert.Equal(0, second.MembersImported + second.PlansImported + second.SubscriptionsImported + second.AttendancesImported);
     }
 

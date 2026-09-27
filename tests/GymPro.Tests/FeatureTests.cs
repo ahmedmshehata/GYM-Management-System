@@ -203,7 +203,7 @@ public class ImportSkipReasonTests
     {
         await using var t = await TestDb.CreateAsync();
         var ct = TestContext.Current.CancellationToken;
-        var file = Path.Combine(AppContext.BaseDirectory, "Legacy", "database_db_at.db");
+        var file = LegacyFixture.CreateWithMember();
         await t.Importer().ImportAsync(file, ct: ct);
         var again = await t.Importer().ImportAsync(file, ct: ct);
 
