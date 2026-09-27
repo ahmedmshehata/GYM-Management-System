@@ -1,4 +1,36 @@
-# GymPro
+<p align="center">
+  <img src="src/GymPro.App/Assets/app-logo.png" width="96" alt="GymPro logo" />
+</p>
+
+<h1 align="center">GymPro</h1>
+
+<p align="center">
+  Gym membership, check-in and payments for Windows: multi-user, audited, fast at the front desk.
+</p>
+
+<p align="center">
+  <a href="https://github.com/ahmedmshehata/GYM-Management-System/actions/workflows/ci.yml"><img src="https://github.com/ahmedmshehata/GYM-Management-System/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/ahmedmshehata/GYM-Management-System/releases/latest"><img src="https://img.shields.io/github/v/release/ahmedmshehata/GYM-Management-System?label=download" alt="Latest release" /></a>
+  <img src="https://img.shields.io/badge/.NET-10-512BD4" alt=".NET 10" />
+  <img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D4" alt="Windows 10 | 11" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license" /></a>
+</p>
+
+![GymPro in all 8 themes](docs/themes.png)
+
+## Highlights
+
+- **Front desk first**: type a card number, press Enter, then Ctrl+Enter to check in. Today's numbers, expiring members and balances due are shown at a glance.
+- **Members**: photos from a webcam or file, list or photo-card view, and scrolling that loads thousands of members smoothly.
+- **Plans**: monthly memberships and session packs, which can expire or be counted per session only. Plans can be paused (frozen) for travel or injury.
+- **Multi-user**: Reception, Manager and Admin roles, hashed passwords, account lockout, and protection against two people overwriting each other's edits.
+- **Audit log**: every change records who, what and when, from which PC. It is append-only, enforced by database triggers.
+- **Your brand**: 8 themes (Fluent, Office, Material, DevExpress-style, High Contrast), all WCAG-tested, plus a branding tool for your logo, name and colour.
+- **Migrate from the old app**: imports the legacy JASystem / DoctorGYM `db_at.db`, including photos, and explains anything it skips.
+
+**Download:** get the latest `GymPro-x.y.z-win-x64.zip` from [Releases](https://github.com/ahmedmshehata/GYM-Management-System/releases), unzip it and run `GymPro.exe`. No .NET install is needed.
+
+---
 
 A rewrite of the legacy JASystem / DoctorGYM desktop app: members, plans, subscriptions and check-in, with
 **multiple user accounts**, an **append-only audit log**, and an **importer for the old `db_at.db` schema**.
@@ -193,3 +225,7 @@ dotnet ef migrations add <Name> -p src/GymPro.Data -s src/GymPro.Data -o Migrati
 ```
 
 Migrations are applied automatically at app start.
+
+## License
+
+[MIT](LICENSE) © 2026 Ahmed Shehata

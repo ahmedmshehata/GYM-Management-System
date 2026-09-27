@@ -1,0 +1,35 @@
+name: Bug report
+description: Something in GymPro doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Members
+        2. ...
+  - type: input
+    id: version
+    attributes:
+      label: GymPro version
+      description: Right-click GymPro.exe > Properties > Details > Product version
+      placeholder: 1.0.0
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 24H2
+  - type: textarea
+    id: log
+    attributes:
+      label: Error log
+      description: Contents of %LOCALAPPDATA%\GymPro\logs\error-*.log, if any. Remove member names or phone numbers first.
+      render: text

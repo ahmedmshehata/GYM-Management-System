@@ -11,5 +11,10 @@
     <Company>GymPro</Company>
     <Product>GymPro</Product>
     <Version>1.0.0</Version>
+    <Authors>Ahmed Shehata</Authors>
+    <Copyright>Copyright (c) 2026 Ahmed Shehata</Copyright>
+    <Description>GymPro - gym membership, check-in and audit management for Windows.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/ahmedmshehata/GYM-Management-System</RepositoryUrl>
   </PropertyGroup>
 </Project>

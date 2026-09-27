@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest an improvement for the front desk, managers or admins
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the situation at the gym, e.g. "at the front desk we often need to ..."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Suggested solution
+  - type: dropdown
+    id: role
+    attributes:
+      label: Who needs it?
+      options: [Reception, Manager, Admin, Members]
