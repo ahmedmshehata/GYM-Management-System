@@ -218,6 +218,8 @@ It runs the tests, then publishes both programs self-contained and single-file f
 Install: unzip anywhere (e.g. `C:\GymPro`) and run `GymPro.exe`. It needs Windows 10 1809+ or Windows 11, 64-bit. Database
 migrations run automatically on first start.
 
+Publishing a new version (tags, GitHub Releases, pre-releases): see [README_DEV.md](README_DEV.md).
+
 ## Schema changes
 
 ```bash

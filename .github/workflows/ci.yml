@@ -67,4 +67,6 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           $files = Get-ChildItem publish -Filter 'GymPro-*' | ForEach-Object FullName
-          gh release create $env:TAG @files --title "GymPro $env:TAG" --generate-notes
+          $extra = @()
+          if ($env:TAG -match '-') { $extra += '--prerelease' }   # v1.3.0-beta.1 -> pre-release, not "Latest"
+          gh release create $env:TAG @files --title "GymPro $env:TAG" --generate-notes @extra
