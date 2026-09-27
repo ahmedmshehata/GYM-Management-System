@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CA1707;CA2201;CA1001;CA1063;CA1816</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GymPro.Data\GymPro.Data.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Real legacy databases from the old app, used by the import tests. -->
+    <None Include="..\..\..\v2\db_at.db" Link="Legacy\v2_db_at.db" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\Database\db_at.db" Link="Legacy\database_db_at.db" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

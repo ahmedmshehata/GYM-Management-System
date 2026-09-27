@@ -1,0 +1,23 @@
+<Application x:Class="GymPro.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:infra="clr-namespace:GymPro.App.Infrastructure"
+             ShutdownMode="OnExplicitShutdown">
+  <Application.Resources>
+    <ResourceDictionary>
+      <!-- Theme tokens (Brush.*, Radius.*, ...) are inserted at index 0 by ThemeManager at startup. -->
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Theming/Controls.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <infra:BytesToImageConverter x:Key="BytesToImage" />
+      <infra:UtcToLocalConverter x:Key="UtcToLocal" />
+      <infra:NullToCollapsedConverter x:Key="NullToCollapsed" />
+      <infra:NullToVisibleConverter x:Key="NullToVisible" />
+      <infra:InitialsConverter x:Key="Initials" />
+      <infra:CountToVisibleConverter x:Key="EmptyToVisible" />
+      <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+      <infra:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

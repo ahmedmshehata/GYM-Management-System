@@ -1,0 +1,65 @@
+<UserControl x:Class="GymPro.App.Views.ImportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+      <TextBlock Text="Import &amp; maintenance" Style="{StaticResource Text.H1}" />
+      <TextBlock Text="Bring plans, members (with photos), subscriptions and attendance over from the old JASystem / DoctorGYM db_at.db." Style="{StaticResource Text.Muted}" />
+    </StackPanel>
+
+    <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Margin="0,0,0,16">
+      <StackPanel>
+        <UniformGrid Columns="3" Margin="0,0,0,14">
+          <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+            <TextBlock Text="&#xE72E;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Success}" Margin="0,0,10,0" />
+            <TextBlock Text="The old file is opened read-only." Style="{StaticResource Text.Muted}" VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+            <TextBlock Text="&#xE72C;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Success}" Margin="0,0,10,0" />
+            <TextBlock Text="Safe to run again: imported rows are skipped." Style="{StaticResource Text.Muted}" VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="&#xE7BA;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Warning}" Margin="0,0,10,0" />
+            <TextBlock Text="Back up the GymPro database first." Style="{StaticResource Text.Muted}" VerticalAlignment="Center" />
+          </StackPanel>
+        </UniformGrid>
+        <DockPanel>
+          <Button DockPanel.Dock="Right" Command="{Binding ImportCommand}" Style="{StaticResource Button.Primary}" Margin="8,0,0,10">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="&#xE8B5;" Style="{StaticResource Text.Icon}" FontSize="13" Margin="0,0,8,0" />
+              <TextBlock Text="Import" />
+            </StackPanel>
+          </Button>
+          <Button DockPanel.Dock="Right" Content="Browse…" Command="{Binding BrowseCommand}" Margin="8,0,0,10" />
+          <TextBox Text="{Binding FilePath}" ToolTip="Path to the legacy db_at.db" />
+        </DockPanel>
+        <ProgressBar IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+      </StackPanel>
+    </Border>
+
+    <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Margin="0,0,0,16">
+      <DockPanel>
+        <Button DockPanel.Dock="Right" Command="{Binding OptimizePhotosCommand}" VerticalAlignment="Center" Margin="12,0,0,0">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="&#xE91B;" Style="{StaticResource Text.Icon}" FontSize="13" Margin="0,0,8,0" />
+            <TextBlock Text="Optimize photos…" />
+          </StackPanel>
+        </Button>
+        <StackPanel>
+          <TextBlock Text="Photo storage" Style="{StaticResource Text.H2}" Margin="0,0,0,4" />
+          <TextBlock Text="{Binding PhotoStatsText}" Style="{StaticResource Text.Muted}" />
+          <TextBlock Style="{StaticResource Text.Caption}" Margin="0,4,0,0"
+                     Text="Shrinks oversized photos (e.g. from the old app) to 600 px, the size new photos are saved at, then compacts the database. A backup is made first." />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <Border Style="{StaticResource Card}" Padding="0">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Log" Style="{StaticResource Text.H2}" Margin="16,14,16,6" />
+        <TextBox Text="{Binding Log, Mode=OneWay}" IsReadOnly="True" FontFamily="Cascadia Mono, Consolas" FontSize="12" VerticalScrollBarVisibility="Auto"
+                 TextWrapping="Wrap" VerticalContentAlignment="Top" BorderThickness="0" Margin="12,0,12,12" Padding="4" />
+      </DockPanel>
+    </Border>
+  </DockPanel>
+</UserControl>

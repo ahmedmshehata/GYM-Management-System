@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Windows 10 SDK target: camera capture uses the built-in Windows.Media.Capture API. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <ApplicationIcon>Assets\GymPro.ico</ApplicationIcon>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>GymPro</AssemblyName>
+    <RootNamespace>GymPro.App</RootNamespace>
+    <!-- CA1859: RelayCommand methods must return Task, not Task<bool>. -->
+    <NoWarn>$(NoWarn);CA1859</NoWarn>
+    <!-- LibraryImport (dark title bar via dwmapi) generates marshalling code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GymPro.Data\GymPro.Data.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Branding\**" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Assets\app-logo.png" />
+    <Resource Include="Assets\GymPro.ico" />
+  </ItemGroup>
+</Project>

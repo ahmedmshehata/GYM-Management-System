@@ -1,0 +1,307 @@
+<UserControl x:Class="GymPro.App.Views.MembersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <UserControl.InputBindings>
+    <KeyBinding Modifiers="Ctrl" Key="N" Command="{Binding NewCommand}" />
+    <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveCommand}" />
+  </UserControl.InputBindings>
+
+  <UserControl.Resources>
+    <!-- Segmented view switch: highlighted when active -->
+    <Style x:Key="ViewToggle" TargetType="Button" BasedOn="{StaticResource Button.Subtle}">
+      <Setter Property="MinWidth" Value="36" />
+      <Setter Property="Padding" Value="8,0" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
+  </UserControl.Resources>
+
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+      <Button DockPanel.Dock="Right" Command="{Binding NewCommand}" Style="{StaticResource Button.Primary}" Margin="0" ToolTip="Ctrl+N" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="&#xE710;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,8,0" />
+          <TextBlock Text="New member" />
+        </StackPanel>
+      </Button>
+      <StackPanel>
+        <TextBlock Text="Members" Style="{StaticResource Text.H1}" />
+        <TextBlock Text="Profiles, photos, subscriptions and payments." Style="{StaticResource Text.Muted}" />
+      </StackPanel>
+    </DockPanel>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="400" />
+        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <!-- ================= list / cards -->
+      <Border Style="{StaticResource Card}">
+        <DockPanel>
+          <DockPanel DockPanel.Dock="Top">
+            <Border DockPanel.Dock="Right" Margin="8,0,0,10" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
+                    CornerRadius="{DynamicResource Radius.Button}" Padding="2">
+              <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding ViewListCommand}" ToolTip="List">
+                  <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ViewToggle}">
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowCards}" Value="False">
+                          <Setter Property="Background" Value="{DynamicResource Brush.Selection}" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                  <TextBlock Text="&#xE8FD;" Style="{StaticResource Text.Icon}" FontSize="14" />
+                </Button>
+                <Button Command="{Binding ViewCardsCommand}" ToolTip="Photo cards">
+                  <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ViewToggle}">
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowCards}" Value="True">
+                          <Setter Property="Background" Value="{DynamicResource Brush.Selection}" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                  <TextBlock Text="&#xE80A;" Style="{StaticResource Text.Icon}" FontSize="14" />
+                </Button>
+              </StackPanel>
+            </Border>
+            <Button DockPanel.Dock="Right" Command="{Binding FindCommand}" IsDefault="True" Margin="8,0,0,10" MinWidth="0">
+              <TextBlock Text="&#xE721;" Style="{StaticResource Text.Icon}" />
+            </Button>
+            <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" ToolTip="Name, number, phone or national ID" />
+          </DockPanel>
+          <TextBlock DockPanel.Dock="Bottom" Text="{Binding CountText}" Style="{StaticResource Text.Caption}" Margin="2,8,0,0" />
+
+          <Grid>
+            <!-- compact list with thumbnails -->
+            <DataGrid x:Name="MemberGrid" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedRow}" ScrollViewer.ScrollChanged="OnListScroll"
+                      Visibility="{Binding ShowCards, Converter={StaticResource InverseBoolToVisibility}}">
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Width="46" CanUserSort="False">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <Grid Width="30" Height="30">
+                        <Ellipse Fill="{DynamicResource Brush.SurfaceAlt}" Stroke="{DynamicResource Brush.Border}" />
+                        <Image Source="{DynamicResource Image.MemberPlaceholder}" Margin="5" Stretch="Uniform" />
+                        <Ellipse>
+                          <Ellipse.Fill>
+                            <ImageBrush ImageSource="{Binding Thumbnail, Converter={StaticResource BytesToImage}}" Stretch="UniformToFill" />
+                          </Ellipse.Fill>
+                        </Ellipse>
+                      </Grid>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="No." Binding="{Binding MemberNo}" Width="Auto" MinWidth="50" />
+                <DataGridTextColumn Header="Name" Binding="{Binding FullName}" Width="*" />
+                <DataGridTextColumn Header="Active until" Binding="{Binding ActiveText}" Width="Auto" />
+              </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- photo cards -->
+            <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedRow}" ScrollViewer.ScrollChanged="OnListScroll"
+                     ItemContainerStyle="{StaticResource Swatch.Item}" Background="Transparent" BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     Visibility="{Binding ShowCards, Converter={StaticResource BoolToVisibility}}">
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Width="104">
+                    <Border Height="104" CornerRadius="{DynamicResource Radius.Card}" Background="{DynamicResource Brush.SurfaceAlt}"
+                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" ClipToBounds="True">
+                      <Grid>
+                        <Image Source="{DynamicResource Image.MemberPlaceholder}" Margin="22" Stretch="Uniform" Opacity="0.85" />
+                        <Border CornerRadius="{DynamicResource Radius.Card}">
+                          <Border.Background>
+                            <ImageBrush ImageSource="{Binding Thumbnail, Converter={StaticResource BytesToImage}}" Stretch="UniformToFill" />
+                          </Border.Background>
+                        </Border>
+                      </Grid>
+                    </Border>
+                    <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" FontSize="12" Margin="2,6,2,0" TextTrimming="CharacterEllipsis" ToolTip="{Binding FullName}" />
+                    <TextBlock Style="{StaticResource Text.Caption}" Margin="2,0,2,2" TextTrimming="CharacterEllipsis">
+                      <Run Text="#" /><Run Text="{Binding MemberNo, Mode=OneWay}" /><Run Text="  " /><Run Text="{Binding ActiveText, Mode=OneWay}" />
+                    </TextBlock>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Text="No members found. Add one with 'New member', or import the old database." Style="{StaticResource Text.Muted}"
+                       TextAlignment="Center" Margin="24" VerticalAlignment="Center"
+                       Visibility="{Binding Results.Count, Converter={StaticResource EmptyToVisible}}" />
+          </Grid>
+        </DockPanel>
+      </Border>
+
+      <!-- ================= empty state -->
+      <Border Grid.Column="2" Style="{StaticResource Card}" Visibility="{Binding Edit, Converter={StaticResource NullToVisible}}">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="340">
+          <TextBlock Text="&#xE77B;" Style="{StaticResource Text.Icon}" FontSize="48" Foreground="{DynamicResource Brush.AccentStrong}" Margin="0,0,0,12" />
+          <TextBlock Text="Select a member" Style="{StaticResource Text.H2}" HorizontalAlignment="Center" />
+          <TextBlock Text="Pick someone from the list, or press Ctrl+N to add a new member." Style="{StaticResource Text.Muted}" TextAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <!-- ================= editor -->
+      <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" Visibility="{Binding Edit, Converter={StaticResource NullToCollapsed}}">
+        <StackPanel>
+          <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+            <StackPanel>
+              <DockPanel Margin="0,0,0,12">
+                <Grid DockPanel.Dock="Left" Width="112" Height="112" Margin="0,0,20,0">
+                  <Ellipse Fill="{DynamicResource Brush.SurfaceAlt}" Stroke="{DynamicResource Brush.Border}" />
+                  <Image Source="{DynamicResource Image.MemberPlaceholder}" Margin="20" Stretch="Uniform" />
+                  <Ellipse>
+                    <Ellipse.Fill>
+                      <ImageBrush ImageSource="{Binding PhotoBytes, Converter={StaticResource BytesToImage}}" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                  </Ellipse>
+                </Grid>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Edit.FullName, TargetNullValue='New member', FallbackValue='New member'}" Style="{StaticResource Text.H1}" />
+                  <WrapPanel Margin="0,8,0,0">
+                    <Button Command="{Binding TakePhotoCommand}" Margin="0,0,8,4">
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE722;" Style="{StaticResource Text.Icon}" FontSize="13" Margin="0,0,8,0" />
+                        <TextBlock Text="Camera…" />
+                      </StackPanel>
+                    </Button>
+                    <Button Command="{Binding BrowsePhotoCommand}" Margin="0,0,8,4">
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B9;" Style="{StaticResource Text.Icon}" FontSize="13" Margin="0,0,8,0" />
+                        <TextBlock Text="From file…" />
+                      </StackPanel>
+                    </Button>
+                    <Button Content="Remove photo" Command="{Binding RemovePhotoCommand}" Style="{StaticResource Button.Subtle}" Margin="0,0,0,4" />
+                  </WrapPanel>
+                </StackPanel>
+              </DockPanel>
+
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="16" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="16" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                  <Label Content="Full name *" Target="{Binding ElementName=NameBox}" />
+                  <TextBox x:Name="NameBox" Text="{Binding Edit.FullName}" />
+                  <Label Content="Phone" />
+                  <TextBox Text="{Binding Edit.Phone}" />
+                  <Label Content="National ID" />
+                  <TextBox Text="{Binding Edit.NationalId}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                  <Label Content="Member no." />
+                  <TextBox Text="{Binding Edit.MemberNo}" />
+                  <Label Content="Gender" />
+                  <ComboBox ItemsSource="{Binding Genders}" SelectedItem="{Binding Edit.Gender}" />
+                  <Label Content="Job" />
+                  <TextBox Text="{Binding Edit.Job}" />
+                </StackPanel>
+                <StackPanel Grid.Column="4">
+                  <Label Content="Height (cm)" />
+                  <TextBox Text="{Binding Edit.HeightCm, TargetNullValue=''}" />
+                  <Label Content="Weight (kg)" />
+                  <TextBox Text="{Binding Edit.WeightKg, TargetNullValue=''}" />
+                  <Label Content="Address" />
+                  <TextBox Text="{Binding Edit.Address}" />
+                </StackPanel>
+              </Grid>
+              <Label Content="Notes" />
+              <TextBox Text="{Binding Edit.Notes}" MinHeight="56" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Padding="8,6" />
+              <DockPanel>
+                <CheckBox Content="Active member" IsChecked="{Binding Edit.IsActive}" VerticalAlignment="Center" />
+                <Button Command="{Binding SaveCommand}" Style="{StaticResource Button.Primary}" HorizontalAlignment="Right" Margin="0" ToolTip="Ctrl+S">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE74E;" Style="{StaticResource Text.Icon}" FontSize="13" Margin="0,0,8,0" />
+                    <TextBlock Text="Save member" />
+                  </StackPanel>
+                </Button>
+              </DockPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- subscriptions -->
+          <Border Style="{StaticResource Card}" Visibility="{Binding IsExisting, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+              <TextBlock Text="Subscriptions" Style="{StaticResource Text.H2}" />
+              <DataGrid ItemsSource="{Binding Subscriptions}" SelectedItem="{Binding SelectedSubscription}" MinHeight="110" MaxHeight="240">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Plan" Binding="{Binding PlanName}" Width="1.3*" MinWidth="110" />
+                  <DataGridTextColumn Header="From" Binding="{Binding StartDate, StringFormat=yyyy-MM-dd}" Width="Auto" />
+                  <DataGridTextColumn Header="Ends" Binding="{Binding EndsText}" Width="Auto" />
+                  <DataGridTextColumn Header="Remaining" Binding="{Binding Remaining}" Width="*" MinWidth="80" />
+                  <DataGridTextColumn Header="Balance" Binding="{Binding Balance, StringFormat=N0}" Width="Auto" />
+                  <DataGridTemplateColumn Header="Status" Width="115">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <Border Style="{StaticResource Badge}"><TextBlock Text="{Binding StatusText}" /></Border>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+              <WrapPanel Margin="0,10,0,0">
+                <TextBox Text="{Binding PaymentAmount}" Width="110" Margin="0,0,8,6" ToolTip="Amount (blank = full balance)" />
+                <Button Content="Add payment" Command="{Binding AddPaymentCommand}" VerticalAlignment="Top" Margin="0,0,8,6" />
+                <Button Command="{Binding PauseCommand}" VerticalAlignment="Top" Margin="0,0,8,6"
+                        IsEnabled="{Binding SelectedSubscription.CanPause, FallbackValue=False}"
+                        ToolTip="Freeze: no check-ins and the days stop counting (plans that allow pausing)">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE769;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,8,0" />
+                    <TextBlock Text="Pause" />
+                  </StackPanel>
+                </Button>
+                <Button Command="{Binding ResumeCommand}" VerticalAlignment="Top" Margin="0,0,8,6"
+                        IsEnabled="{Binding SelectedSubscription.IsPaused, FallbackValue=False}"
+                        ToolTip="Resume: the end date moves later by the paused days">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE768;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,8,0" />
+                    <TextBlock Text="Resume" />
+                  </StackPanel>
+                </Button>
+                <Button Content="Cancel subscription" Command="{Binding CancelSubscriptionCommand}" Style="{StaticResource Button.Danger}"
+                        VerticalAlignment="Top" Margin="0,0,0,6" ToolTip="Managers only" />
+              </WrapPanel>
+              <TextBlock Style="{StaticResource Text.Caption}" Margin="0,0,0,4"
+                         Visibility="{Binding SelectedSubscription.CanPause, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
+                <Run Text="Pause days left on this subscription:" /> <Run Text="{Binding SelectedSubscription.State.PauseDaysLeft, Mode=OneWay}" />
+              </TextBlock>
+
+              <Border Height="1" Background="{DynamicResource Brush.Border}" Margin="0,8,0,16" />
+              <TextBlock Text="Sell a new subscription" Style="{StaticResource Text.H2}" />
+              <WrapPanel>
+                <StackPanel Width="260" Margin="0,0,12,0">
+                  <Label Content="Plan" />
+                  <ComboBox ItemsSource="{Binding Plans}" SelectedItem="{Binding SellPlan}" DisplayMemberPath="Name" />
+                </StackPanel>
+                <StackPanel Width="150" Margin="0,0,12,0">
+                  <Label Content="Start date" />
+                  <DatePicker SelectedDate="{Binding SellStart}" />
+                </StackPanel>
+                <StackPanel Width="120" Margin="0,0,12,0">
+                  <Label Content="Paid now" />
+                  <TextBox Text="{Binding SellPaid}" ToolTip="Blank = full price" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,10">
+                  <TextBlock Text="{Binding SellPlan.Price, StringFormat='Price {0:N0}'}" Style="{StaticResource Text.Muted}" Margin="0,0,0,4" />
+                  <Button Content="Sell" Command="{Binding SellCommand}" Style="{StaticResource Button.Primary}" Margin="0" />
+                </StackPanel>
+              </WrapPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,82 @@
+<Window x:Class="GymPro.Branding.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GymPro Branding Tool" Width="980" Height="680" MinWidth="820" MinHeight="560"
+        WindowStartupLocation="CenterScreen" FontSize="13">
+  <Grid Margin="16">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="360" />
+      <ColumnDefinition Width="20" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Inputs -->
+    <StackPanel>
+      <TextBlock Text="1. Brand" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,8" />
+      <Label Content="_Title (shown in the window, login and header)" Target="{Binding ElementName=TitleBox}" />
+      <TextBox x:Name="TitleBox" Text="GymPro" TextChanged="OnInputChanged" />
+
+      <Label Content="_Accent colour" Target="{Binding ElementName=AccentBox}" />
+      <DockPanel>
+        <Border x:Name="AccentSwatch" DockPanel.Dock="Right" Width="30" Height="26" Margin="8,0,0,8" BorderBrush="#999" BorderThickness="1" />
+        <TextBox x:Name="AccentBox" Text="#1E88E5" TextChanged="OnInputChanged" />
+      </DockPanel>
+
+      <Label Content="Default _theme (login screen and staff who haven't picked one)" Target="{Binding ElementName=ThemeBox}" />
+      <ComboBox x:Name="ThemeBox" Margin="0,0,0,8" SelectionChanged="OnInputChanged" DisplayMemberPath="Label" SelectedValuePath="Id" />
+
+      <Label Content="Logo (PNG / JPG / ICO / BMP)" />
+      <DockPanel>
+        <Button DockPanel.Dock="Right" Content="Clear" Click="OnClearLogo" Margin="6,0,0,8" MinWidth="60" />
+        <Button DockPanel.Dock="Right" Content="Browse…" Click="OnBrowseLogo" Margin="6,0,0,8" />
+        <TextBox x:Name="LogoFileBox" IsReadOnly="True" />
+      </DockPanel>
+      <TextBlock x:Name="LogoInfo" Foreground="#666" FontSize="12" Margin="0,0,0,10" TextWrapping="Wrap" />
+
+      <TextBlock Text="2. How to store the logo" FontSize="15" FontWeight="SemiBold" Margin="0,6,0,6" />
+      <RadioButton x:Name="CopyMode" IsChecked="True" Margin="0,0,0,4" Checked="OnInputChanged"
+                   Content="Copy file next to the app  (Branding\logo.png)" />
+      <RadioButton x:Name="EmbedMode" Margin="0,0,0,10" Checked="OnInputChanged"
+                   Content="Embed as Base64 inside appsettings.json" />
+
+      <TextBlock Text="3. Target app" FontSize="15" FontWeight="SemiBold" Margin="0,6,0,6" />
+      <Label Content="GymPro appsettings.json" />
+      <DockPanel>
+        <Button DockPanel.Dock="Right" Content="Browse…" Click="OnBrowseTarget" Margin="6,0,0,8" />
+        <TextBox x:Name="TargetBox" TextChanged="OnInputChanged" />
+      </DockPanel>
+
+      <TextBlock x:Name="ErrorText" Foreground="#C62828" TextWrapping="Wrap" Margin="0,4,0,8" />
+      <WrapPanel>
+        <Button x:Name="ApplyButton" Content="Apply to app" Click="OnApply" FontWeight="SemiBold" Margin="0,0,6,6" />
+        <Button Content="Copy JSON" Click="OnCopyJson" Margin="0,0,6,6" />
+        <Button Content="Save JSON as…" Click="OnSaveJson" Margin="0,0,6,6" />
+      </WrapPanel>
+      <TextBlock x:Name="StatusText" Foreground="#2E7D32" TextWrapping="Wrap" />
+    </StackPanel>
+
+    <!-- Preview -->
+    <DockPanel Grid.Column="2">
+      <TextBlock DockPanel.Dock="Top" Text="Preview: login screen" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,6" />
+      <Border DockPanel.Dock="Top" BorderBrush="#CCC" BorderThickness="1" Margin="0,0,0,12" HorizontalAlignment="Left" Width="420">
+        <StackPanel>
+          <Border x:Name="PreviewHeader" Padding="20">
+            <StackPanel HorizontalAlignment="Center">
+              <Image x:Name="PreviewLogo" MaxHeight="96" MaxWidth="280" Stretch="Uniform" Margin="0,0,0,10" />
+              <TextBlock x:Name="PreviewTitle" FontSize="22" FontWeight="SemiBold" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+          <StackPanel Margin="24,14" IsEnabled="False">
+            <TextBlock Text="User name" Foreground="#888" />
+            <Border Height="24" BorderBrush="#CCC" BorderThickness="1" Margin="0,2,0,8" />
+            <TextBlock Text="Password" Foreground="#888" />
+            <Border Height="24" BorderBrush="#CCC" BorderThickness="1" Margin="0,2,0,0" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <TextBlock DockPanel.Dock="Top" Text="Generated appsettings.json section" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,6" />
+      <TextBox x:Name="JsonBox" IsReadOnly="True" FontFamily="Consolas" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="0" />
+    </DockPanel>
+  </Grid>
+</Window>
