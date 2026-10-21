@@ -1,0 +1,9 @@
+<!-- Brand Studio icon, 16-32 px variant: same fan, bolder cards, no highlights/rivet/shadow (they turn to mud when tiny),
+     tighter tile margin and a stronger rim so it holds on dark taskbars. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect x="4" y="4" width="248" height="248" rx="52" fill="#334155"/>
+  <rect x="6" y="6" width="244" height="244" rx="50" fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="6"/>
+  <g transform="rotate(-34 128 204)"><rect x="96" y="36" width="64" height="184" rx="16" fill="#14B8A6"/></g>
+  <g><rect x="96" y="36" width="64" height="184" rx="16" fill="#F59E0B"/></g>
+  <g transform="rotate(34 128 204)"><rect x="96" y="36" width="64" height="184" rx="16" fill="#8B5CF6"/></g>
+</svg>
