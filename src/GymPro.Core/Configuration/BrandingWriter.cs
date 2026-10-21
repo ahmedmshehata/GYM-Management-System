@@ -52,6 +52,35 @@ public static partial class BrandingWriter
         [nameof(BrandingOptions.DefaultTheme)] = Theming.ThemeCatalog.Find(defaultTheme).Id, // unknown ids fall back to the default
     };
 
+    /// <summary>
+    /// The full white-label section for a brand. Image paths are what the app should read
+    /// (e.g. <c>Branding/logo.png</c>, relative to the app folder). AppTitle is written too, for older app versions.
+    /// </summary>
+    public static JsonObject BuildSection(GymPro.Core.Branding.BrandProfile p, string? logoPath, string? logoBase64, string? iconPath) => new()
+    {
+        [nameof(BrandingOptions.AppTitle)] = p.ProductName.Trim(),
+        [nameof(BrandingOptions.ProductName)] = p.ProductName.Trim(),
+        [nameof(BrandingOptions.ShortName)] = p.ShortName.Trim(),
+        [nameof(BrandingOptions.CompanyName)] = Clean(p.CompanyName),
+        [nameof(BrandingOptions.Copyright)] = Clean(p.Copyright),
+        [nameof(BrandingOptions.Description)] = Clean(p.Description),
+        [nameof(BrandingOptions.WebsiteUrl)] = Clean(p.WebsiteUrl),
+        [nameof(BrandingOptions.SupportEmail)] = Clean(p.SupportEmail),
+        [nameof(BrandingOptions.SupportPhone)] = Clean(p.SupportPhone),
+        [nameof(BrandingOptions.LoginWelcome)] = Clean(p.LoginWelcome),
+        [nameof(BrandingOptions.ShowPoweredBy)] = p.ShowPoweredBy,
+        [nameof(BrandingOptions.LogoPath)] = logoPath,
+        [nameof(BrandingOptions.LogoBase64)] = logoBase64,
+        [nameof(BrandingOptions.IconPath)] = iconPath,
+        [nameof(BrandingOptions.AccentColor)] = p.AccentColor.Trim().ToUpperInvariant(),
+        [nameof(BrandingOptions.DefaultTheme)] = Theming.ThemeCatalog.Find(p.DefaultTheme).Id,
+        [nameof(BrandingOptions.AllowedThemes)] = new JsonArray([.. p.AllowedThemes.Select(t => (JsonNode)JsonValue.Create(t))]),
+        [nameof(BrandingOptions.DataFolderName)] = p.DataFolderName.Trim(),
+        [nameof(BrandingOptions.ExeName)] = p.ExeName.Trim(),
+    };
+
+    private static string? Clean(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
+
     public static string ToJson(JsonNode node) => node.ToJsonString(Indented);
 
     /// <summary>Returns the full appsettings.json text with <c>Branding</c> replaced and everything else preserved.</summary>

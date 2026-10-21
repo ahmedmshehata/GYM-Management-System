@@ -136,4 +136,24 @@ public static class ThemeCatalog
     public static ThemeDefinition Find(string? id) =>
         All.FirstOrDefault(t => string.Equals(t.Id, id, StringComparison.OrdinalIgnoreCase))
         ?? All.First(t => t.Id == DefaultId);
+
+    /// <summary>The themes a brand offers. Null/empty (or only unknown ids) = all themes.</summary>
+    public static IReadOnlyList<ThemeDefinition> Allowed(IEnumerable<string>? allowedIds)
+    {
+        var ids = (allowedIds ?? []).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var list = All.Where(t => ids.Contains(t.Id)).ToList();
+        return list.Count == 0 ? All : list;
+    }
+
+    /// <summary>
+    /// The theme to actually use: the requested one if the brand allows it, else the brand default if allowed,
+    /// else the first allowed theme. A saved preference can't bypass the reseller's restriction.
+    /// </summary>
+    public static ThemeDefinition Pick(string? requested, IEnumerable<string>? allowedIds, string? brandDefault)
+    {
+        var allowed = Allowed(allowedIds);
+        return allowed.FirstOrDefault(t => string.Equals(t.Id, requested, StringComparison.OrdinalIgnoreCase))
+            ?? allowed.FirstOrDefault(t => string.Equals(t.Id, brandDefault, StringComparison.OrdinalIgnoreCase))
+            ?? allowed[0];
+    }
 }
