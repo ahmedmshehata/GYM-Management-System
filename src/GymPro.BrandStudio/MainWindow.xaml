@@ -1,0 +1,381 @@
+<Window x:Class="GymPro.BrandStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GymPro.BrandStudio"
+        Title="{Binding WindowTitle}" Width="1280" Height="820" MinWidth="1080" MinHeight="680"
+        WindowStartupLocation="CenterScreen" Background="{StaticResource Studio.Window}"
+        Foreground="{StaticResource Studio.Text}" FontFamily="Segoe UI" FontSize="13">
+  <Window.DataContext>
+    <local:StudioViewModel />
+  </Window.DataContext>
+
+  <DockPanel>
+    <!-- ============ toolbar -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource Studio.Surface}" BorderBrush="{StaticResource Studio.Border}" BorderThickness="0,0,0,1" Padding="12,8">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Left" Text="Brand Studio" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0,24,0" />
+        <StackPanel Orientation="Horizontal">
+          <Button Command="{Binding NewCommand}" Content="New" />
+          <Button Command="{Binding OpenCommand}" Content="Open…" ToolTip="Open brand.json (in a pack folder) or a .brandpack file" />
+          <Button Command="{Binding SaveFolderCommand}" Content="Save as folder…" ToolTip="Diffable folder: brand.json + logo.png + app.ico" />
+          <Button Command="{Binding SaveZipCommand}" Content="Save as .brandpack…" ToolTip="One file, easy to e-mail" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- ============ status bar -->
+    <Border DockPanel.Dock="Bottom" Background="{StaticResource Studio.Surface}" BorderBrush="{StaticResource Studio.Border}" BorderThickness="0,1,0,0" Padding="12,6">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Right" Text="{Binding Status}" Foreground="{StaticResource Studio.Muted}" TextTrimming="CharacterEllipsis" MaxWidth="640" />
+        <TextBlock Text="{Binding Errors.Summary}" TextTrimming="CharacterEllipsis">
+          <TextBlock.Style>
+            <Style TargetType="TextBlock">
+              <Setter Property="Foreground" Value="#15803D" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Errors.Any}" Value="True">
+                  <Setter Property="Foreground" Value="{StaticResource Studio.Error}" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </TextBlock.Style>
+        </TextBlock>
+      </DockPanel>
+    </Border>
+
+    <Grid Margin="12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="560" />
+        <ColumnDefinition Width="12" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <!-- ============ editor tabs -->
+      <TabControl Padding="16,12" Background="{StaticResource Studio.Surface}">
+        <!-- Identity -->
+        <TabItem Header="1  Identity">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+              <Label Content="Product name *" ToolTip="Shown in the window title, login and About" />
+              <TextBox Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Text="{Binding Errors[ProductName]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[ProductName], Converter={StaticResource NullToCollapsed}}" />
+              <Label Content="Short name *" ToolTip="Dialog captions and messages; keep it short" />
+              <TextBox Text="{Binding ShortName, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Text="{Binding Errors[ShortName]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[ShortName], Converter={StaticResource NullToCollapsed}}" />
+              <Label Content="Login welcome (optional)" />
+              <TextBox Text="{Binding LoginWelcome, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Text="{Binding Errors[LoginWelcome]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[LoginWelcome], Converter={StaticResource NullToCollapsed}}" />
+
+              <TextBlock Text="Company &amp; support" Style="{StaticResource H2}" Margin="0,14,0,6" />
+              <TextBlock Text="Shown in About and in error messages, and used for the exe file properties." Style="{StaticResource Hint}" />
+              <Label Content="Company name" />
+              <TextBox Text="{Binding CompanyName, UpdateSourceTrigger=PropertyChanged}" />
+              <Label Content="Copyright" />
+              <TextBox Text="{Binding Copyright, UpdateSourceTrigger=PropertyChanged}" />
+              <Label Content="Description" />
+              <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+              <Label Content="Website" />
+              <TextBox Text="{Binding WebsiteUrl, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Text="{Binding Errors[WebsiteUrl]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[WebsiteUrl], Converter={StaticResource NullToCollapsed}}" />
+              <Label Content="Support email" />
+              <TextBox Text="{Binding SupportEmail, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Text="{Binding Errors[SupportEmail]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[SupportEmail], Converter={StaticResource NullToCollapsed}}" />
+              <Label Content="Support phone" />
+              <TextBox Text="{Binding SupportPhone, UpdateSourceTrigger=PropertyChanged}" />
+              <CheckBox Content="Show &quot;Powered by GymPro&quot; in About" IsChecked="{Binding ShowPoweredBy}" Margin="0,12,0,2" />
+              <TextBlock Style="{StaticResource Hint}"
+                         Text="The licence notice in About → Licences is always shown: the MIT licence requires keeping the original copyright notice." />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- Logo & icon -->
+        <TabItem Header="2  Logo &amp; icon">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+              <TextBlock Text="Logo" Style="{StaticResource H2}" />
+              <DockPanel Margin="0,0,0,8">
+                <Border DockPanel.Dock="Left" Width="120" Height="120" Margin="0,0,16,0" BorderBrush="{StaticResource Studio.Border}" BorderThickness="1" CornerRadius="6" Background="#F9FAFB">
+                  <Image Source="{Binding LogoImage}" Stretch="Uniform" Margin="8" />
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="Choose logo…" Command="{Binding PickLogoCommand}" Style="{StaticResource Primary}" />
+                    <Button Content="Remove" Command="{Binding RemoveLogoCommand}" />
+                  </StackPanel>
+                  <TextBlock Text="{Binding LogoInfo}" Style="{StaticResource Hint}" />
+                  <TextBlock Text="PNG with a transparent background works best. Large images are scaled to fit 512 px." Style="{StaticResource Hint}" />
+                  <TextBlock Text="{Binding Errors[Logo]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[Logo], Converter={StaticResource NullToCollapsed}}" />
+                </StackPanel>
+              </DockPanel>
+
+              <TextBlock Text="Windows icon" Style="{StaticResource H2}" Margin="0,12,0,4" />
+              <TextBlock Style="{StaticResource Hint}"
+                         Text="Generated from the logo at every size Windows uses (16 to 256 px), or import your own .ico. This is the taskbar, title-bar and desktop icon." />
+              <ItemsControl ItemsSource="{Binding IconPreviews}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type local:IconPreview}">
+                    <StackPanel Margin="0,0,12,0">
+                      <!-- light and dark taskbar backgrounds, pixel-exact (no scaling) -->
+                      <Border Background="#F3F3F3" Padding="6" BorderBrush="{StaticResource Studio.Border}" BorderThickness="1">
+                        <Image Source="{Binding Image}" Width="{Binding Size}" Height="{Binding Size}" MaxWidth="96" MaxHeight="96"
+                               RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" />
+                      </Border>
+                      <Border Background="#202020" Padding="6" BorderBrush="{StaticResource Studio.Border}" BorderThickness="1,0,1,1">
+                        <Image Source="{Binding Image}" Width="{Binding Size}" Height="{Binding Size}" MaxWidth="96" MaxHeight="96"
+                               RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" />
+                      </Border>
+                      <TextBlock Text="{Binding Label}" Style="{StaticResource Hint}" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <Border Background="#FFFBEB" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="4" Padding="10,8" Margin="0,8,0,8"
+                      Visibility="{Binding IconWarning, Converter={StaticResource NullToCollapsed}}">
+                <TextBlock Text="{Binding IconWarning}" TextWrapping="Wrap" Foreground="#92400E" />
+              </Border>
+              <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <Button Content="Import .ico…" Command="{Binding ImportIconCommand}" />
+                <Button Content="Generate from logo" Command="{Binding RegenerateIconCommand}" />
+              </StackPanel>
+              <TextBlock Text="Using an imported icon (it won't change when the logo changes)." Style="{StaticResource Hint}" Margin="0,6,0,0"
+                         Visibility="{Binding IconImported, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- Colours & themes -->
+        <TabItem Header="3  Colours &amp; themes">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+              <TextBlock Text="Brand colour" Style="{StaticResource H2}" />
+              <DockPanel Margin="0,0,0,2">
+                <Border DockPanel.Dock="Right" Width="34" Height="28" Margin="8,0,0,0" CornerRadius="4" BorderBrush="{StaticResource Studio.Border}" BorderThickness="1"
+                        Background="{Binding Palette.Accent}" />
+                <TextBox Text="{Binding AccentColor, UpdateSourceTrigger=PropertyChanged}" />
+              </DockPanel>
+              <TextBlock Text="{Binding Errors[AccentColor]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[AccentColor], Converter={StaticResource NullToCollapsed}}" />
+              <WrapPanel Margin="0,4,0,8">
+                <WrapPanel.Resources>
+                  <Style TargetType="Button">
+                    <Setter Property="Width" Value="26" /><Setter Property="Height" Value="26" /><Setter Property="Margin" Value="0,0,6,6" />
+                    <Setter Property="BorderBrush" Value="#9CA3AF" /><Setter Property="Command" Value="{Binding DataContext.SetAccentCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                    <Setter Property="ToolTip" Value="{Binding CommandParameter, RelativeSource={RelativeSource Self}}" />
+                  </Style>
+                </WrapPanel.Resources>
+                <Button Background="#1E88E5" CommandParameter="#1E88E5" /><Button Background="#0D9488" CommandParameter="#0D9488" />
+                <Button Background="#16A34A" CommandParameter="#16A34A" /><Button Background="#E53935" CommandParameter="#E53935" />
+                <Button Background="#F97316" CommandParameter="#F97316" /><Button Background="#7C3AED" CommandParameter="#7C3AED" />
+                <Button Background="#DB2777" CommandParameter="#DB2777" /><Button Background="#111827" CommandParameter="#111827" />
+                <Button Background="#FACC15" CommandParameter="#FACC15" />
+              </WrapPanel>
+              <Border Background="#EFF6FF" BorderBrush="#93C5FD" BorderThickness="1" CornerRadius="4" Padding="10,8" Margin="0,0,0,8"
+                      Visibility="{Binding AccentNote, Converter={StaticResource NullToCollapsed}}">
+                <TextBlock Text="{Binding AccentNote}" TextWrapping="Wrap" Foreground="#1E3A8A" />
+              </Border>
+
+              <TextBlock Text="Themes offered" Style="{StaticResource H2}" Margin="0,8,0,4" />
+              <TextBlock Text="Staff can only pick these in the app. Untick themes that don't suit the brand. All ticked = every theme, including future ones." Style="{StaticResource Hint}" />
+              <ItemsControl ItemsSource="{Binding Themes}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type local:ThemeChoice}">
+                    <CheckBox Content="{Binding Label}" IsChecked="{Binding IsAllowed}" Margin="0,2" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <TextBlock Text="{Binding Errors[AllowedThemes]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[AllowedThemes], Converter={StaticResource NullToCollapsed}}" />
+
+              <Label Content="Default theme (login screen, new staff)" Margin="0,10,0,3" />
+              <ComboBox ItemsSource="{Binding AllThemes}" SelectedValue="{Binding DefaultTheme}" SelectedValuePath="Id" DisplayMemberPath="DisplayName" />
+              <TextBlock Text="{Binding Errors[DefaultTheme]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[DefaultTheme], Converter={StaticResource NullToCollapsed}}" />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- Data & files -->
+        <TabItem Header="4  Data &amp; files">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+              <Label Content="Data folder name *" />
+              <TextBox Text="{Binding DataFolderName, UpdateSourceTrigger=PropertyChanged}" />
+              <TextBlock Text="{Binding Errors[DataFolderName]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[DataFolderName], Converter={StaticResource NullToCollapsed}}" />
+              <TextBlock Style="{StaticResource Hint}" TextWrapping="Wrap">
+                <Run Text="The database goes to" /> <Run Text="%ProgramData%\" FontFamily="Consolas" /><Run Text="{Binding DataFolderName, Mode=OneWay}" FontFamily="Consolas" /><Run Text="\gym.db, and logs and per-PC settings to" FontFamily="Consolas" />
+                <Run Text="%LOCALAPPDATA%\" FontFamily="Consolas" /><Run Text="{Binding DataFolderName, Mode=OneWay}" FontFamily="Consolas" /><Run Text="." />
+              </TextBlock>
+              <Border Background="#FFFBEB" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="4" Padding="10,8" Margin="0,0,0,12">
+                <TextBlock TextWrapping="Wrap" Foreground="#92400E"
+                           Text="Changing this for a gym that already uses the app does not move their data. On start the app detects the database in the old folder, explains how to move it, and stops. It never silently starts with an empty database. Use &quot;GymPro&quot; to keep existing installs where they are." />
+              </Border>
+
+              <Label Content="Program file name *" />
+              <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text=".exe" VerticalAlignment="Center" Margin="6,0,0,0" Foreground="{StaticResource Studio.Muted}" />
+                <TextBox Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
+              </DockPanel>
+              <TextBlock Text="{Binding Errors[ExeName]}" Style="{StaticResource FieldError}" Visibility="{Binding Errors[ExeName], Converter={StaticResource NullToCollapsed}}" />
+              <TextBlock Style="{StaticResource Hint}"
+                         Text="Used for branded builds: the program, its zip and its file properties. Letters, digits, dot, dash and underscore; no spaces." />
+            </StackPanel>
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- Output -->
+        <TabItem Header="5  Output">
+          <DockPanel>
+            <StackPanel DockPanel.Dock="Top">
+              <TextBlock Text="Apply to an installed app" Style="{StaticResource H2}" />
+              <TextBlock Style="{StaticResource Hint}"
+                         Text="Writes the brand into the app's appsettings.json (keeping appsettings.json.bak) and copies the logo and icon next to it. Names, logo, colours, support details and themes change on the next start. The program file name, file properties and built-in taskbar icon need a branded build (below)." />
+              <Button Content="Apply to appsettings.json…" Command="{Binding ApplyToAppCommand}" HorizontalAlignment="Left" Margin="0,0,0,16" />
+
+              <TextBlock Text="Build a branded package" Style="{StaticResource H2}" />
+              <StackPanel Visibility="{Binding CanBuild, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock Style="{StaticResource Hint}">
+                  <Run Text="Runs tools\publish.ps1 -Brand in" /> <Run Text="{Binding RepoRoot, Mode=OneWay}" FontFamily="Consolas" /><Run Text=". Output: publish\" /><Run Text="{Binding ExeName, Mode=OneWay}" /><Run Text=" and a zip with checksum. Needs the .NET SDK and PowerShell 7." />
+                </TextBlock>
+                <StackPanel Orientation="Horizontal">
+                  <Button Content="Build package" Command="{Binding BuildCommand}" Style="{StaticResource Primary}" />
+                  <Button Content="Open output folder" Command="{Binding OpenBuiltFolderCommand}" Visibility="{Binding BuiltFolder, Converter={StaticResource NullToCollapsed}}" />
+                </StackPanel>
+                <ProgressBar IsIndeterminate="True" Height="3" Margin="0,8,0,0" Visibility="{Binding IsBuilding, Converter={StaticResource BoolToVisibility}}" />
+              </StackPanel>
+              <StackPanel>
+                <StackPanel.Style>
+                  <Style TargetType="StackPanel">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding CanBuild}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </StackPanel.Style>
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Building needs the source code (a folder containing GymPro.slnx). Without it, save the brand as a .brandpack and send it to whoever builds packages." />
+                <Button Content="Locate source folder…" Command="{Binding LocateSourceCommand}" HorizontalAlignment="Left" />
+              </StackPanel>
+            </StackPanel>
+            <TextBox Text="{Binding BuildLog, Mode=OneWay}" IsReadOnly="True" FontFamily="Cascadia Mono, Consolas" FontSize="11"
+                     VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Margin="0,12,0,0" TextChanged="OnLogChanged" />
+          </DockPanel>
+        </TabItem>
+      </TabControl>
+
+      <!-- ============ live preview -->
+      <DockPanel Grid.Column="2">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+          <ComboBox DockPanel.Dock="Right" Width="220" ItemsSource="{Binding PreviewThemes}" SelectedItem="{Binding PreviewTheme}" DisplayMemberPath="DisplayName" ToolTip="Preview in each offered theme" />
+          <TextBlock Text="Live preview" Style="{StaticResource H2}" Margin="0" VerticalAlignment="Center" />
+        </DockPanel>
+
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource Card}" Padding="12,10" Margin="0,8,0,0">
+          <StackPanel>
+            <TextBlock Text="Readability check (WCAG) in this theme" FontWeight="SemiBold" Margin="0,0,0,4" />
+            <ItemsControl ItemsSource="{Binding Contrast}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:ContrastCheck}">
+                  <DockPanel Margin="0,1">
+                    <TextBlock DockPanel.Dock="Left" Text="{Binding Glyph}" FontFamily="{StaticResource IconFont}" Width="20"
+                               Foreground="{Binding Passes, Converter={StaticResource PassBrush}}" VerticalAlignment="Center" />
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding Result}" Foreground="{StaticResource Studio.Muted}" />
+                    <TextBlock Text="{Binding What}" />
+                  </DockPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="12" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <!-- login screen -->
+          <Border BorderBrush="{StaticResource Studio.Border}" BorderThickness="1" Background="{Binding Palette.Window}" VerticalAlignment="Top">
+            <StackPanel>
+              <Border Background="{Binding Palette.Header}" Padding="16,20">
+                <StackPanel HorizontalAlignment="Center">
+                  <Image Source="{Binding LogoImage}" MaxHeight="64" MaxWidth="180" Margin="0,0,0,8" />
+                  <TextBlock Text="{Binding PreviewProductName}" FontSize="16" FontWeight="SemiBold" Foreground="{Binding Palette.OnHeader}" TextAlignment="Center" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding PreviewWelcome}" FontSize="11" Foreground="{Binding Palette.HeaderMuted}" HorizontalAlignment="Center" Margin="0,2,0,0" />
+                </StackPanel>
+              </Border>
+              <StackPanel Margin="18,14,18,18">
+                <TextBlock Text="User name" FontSize="10.5" Foreground="{Binding Palette.TextMuted}" />
+                <Border Height="24" Background="{Binding Palette.Input}" BorderBrush="{Binding Palette.AccentStrong}" BorderThickness="1.5" Margin="0,2,0,8" CornerRadius="3" />
+                <TextBlock Text="Password" FontSize="10.5" Foreground="{Binding Palette.TextMuted}" />
+                <Border Height="24" Background="{Binding Palette.Input}" BorderBrush="{Binding Palette.InputBorder}" BorderThickness="1" Margin="0,2,0,12" CornerRadius="3" />
+                <Border Height="30" Background="{Binding Palette.Accent}" CornerRadius="3">
+                  <TextBlock Text="Sign in" Foreground="{Binding Palette.OnAccent}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- main window -->
+          <Border Grid.Column="2" BorderBrush="{StaticResource Studio.Border}" BorderThickness="1" Background="{Binding Palette.Window}" VerticalAlignment="Top">
+            <Grid Height="330">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Border Grid.ColumnSpan="2" Background="{Binding Palette.Header}">
+                <DockPanel Margin="10,0">
+                  <Image DockPanel.Dock="Left" Source="{Binding LogoImage}" Height="24" Margin="0,0,8,0" />
+                  <TextBlock Text="{Binding PreviewProductName}" Foreground="{Binding Palette.OnHeader}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </DockPanel>
+              </Border>
+              <Border Grid.Row="1" Background="{Binding Palette.Nav}">
+                <StackPanel Margin="6,8">
+                  <Border Background="{Binding Palette.NavSelected}" CornerRadius="3" Padding="8,6">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Left" Width="3" Background="{Binding Palette.NavIndicator}" Margin="-8,0,6,0" CornerRadius="1" />
+                      <TextBlock Text="Check-in" FontSize="11" FontWeight="SemiBold" Foreground="{Binding Palette.OnNavSelected}" />
+                    </DockPanel>
+                  </Border>
+                  <TextBlock Text="Members" FontSize="11" Foreground="{Binding Palette.OnNav}" Margin="8,8,0,0" />
+                  <TextBlock Text="Plans" FontSize="11" Foreground="{Binding Palette.OnNav}" Margin="8,8,0,0" />
+                  <TextBlock Text="Audit log" FontSize="11" Foreground="{Binding Palette.OnNav}" Margin="8,8,0,0" />
+                </StackPanel>
+              </Border>
+              <StackPanel Grid.Row="1" Grid.Column="1" Margin="12">
+                <TextBlock Text="Check-in" FontSize="14" FontWeight="SemiBold" Foreground="{Binding Palette.Text}" />
+                <TextBlock Text="Type a card number and press Enter." FontSize="10" Foreground="{Binding Palette.TextMuted}" Margin="0,0,0,10" />
+                <UniformGrid Columns="2" Margin="0,0,0,10">
+                  <Border Background="{Binding Palette.Surface}" BorderBrush="{Binding Palette.Border}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,0,6,0">
+                    <StackPanel>
+                      <TextBlock Text="Check-ins today" FontSize="9.5" Foreground="{Binding Palette.TextMuted}" />
+                      <TextBlock Text="128" FontSize="16" FontWeight="SemiBold" Foreground="{Binding Palette.Text}" />
+                    </StackPanel>
+                  </Border>
+                  <Border Background="{Binding Palette.Surface}" BorderBrush="{Binding Palette.Border}" BorderThickness="1" CornerRadius="4" Padding="8">
+                    <StackPanel>
+                      <TextBlock Text="Active members" FontSize="9.5" Foreground="{Binding Palette.TextMuted}" />
+                      <TextBlock Text="1,204" FontSize="16" FontWeight="SemiBold" Foreground="{Binding Palette.Text}" />
+                    </StackPanel>
+                  </Border>
+                </UniformGrid>
+                <Border Background="{Binding Palette.Surface}" BorderBrush="{Binding Palette.Border}" BorderThickness="1" CornerRadius="4" Padding="10">
+                  <StackPanel>
+                    <TextBlock Text="Member name" FontWeight="SemiBold" Foreground="{Binding Palette.Text}" />
+                    <TextBlock Text="#1024 · Monthly plan" FontSize="10" Foreground="{Binding Palette.TextMuted}" Margin="0,0,0,10" />
+                    <Border Background="{Binding Palette.Accent}" CornerRadius="3" Padding="12,6" HorizontalAlignment="Left">
+                      <TextBlock Text="Check in" Foreground="{Binding Palette.OnAccent}" FontWeight="SemiBold" FontSize="11" />
+                    </Border>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Grid>
+          </Border>
+        </Grid>
+      </DockPanel>
+    </Grid>
+  </DockPanel>
+</Window>

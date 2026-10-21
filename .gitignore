@@ -10,3 +10,4 @@ publish/
 *.bak
 *.tmp
 artifacts/
+publish-sample/

@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/GymPro.App/GymPro.App.csproj" />
     <Project Path="src/GymPro.Branding/GymPro.Branding.csproj" />
+    <Project Path="src/GymPro.BrandStudio/GymPro.BrandStudio.csproj" />
     <Project Path="src/GymPro.Core/GymPro.Core.csproj" />
     <Project Path="src/GymPro.Data/GymPro.Data.csproj" />
   </Folder>

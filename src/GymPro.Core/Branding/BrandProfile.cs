@@ -133,12 +133,20 @@ public static partial class BrandProfileValidator
             e.Add((nameof(p.DefaultTheme), "The default theme must be one of the allowed themes."));
         }
 
-        if (!IsSafeName(p.DataFolderName, SafeFolder()))
+        if (string.IsNullOrWhiteSpace(p.DataFolderName))
+        {
+            e.Add((nameof(p.DataFolderName), "Data folder name is required."));
+        }
+        else if (!IsSafeName(p.DataFolderName, SafeFolder()))
         {
             e.Add((nameof(p.DataFolderName), "Data folder must be a plain folder name (letters, digits, space . _ -)."));
         }
 
-        if (!IsSafeName(p.ExeName, SafeExe()))
+        if (string.IsNullOrWhiteSpace(p.ExeName))
+        {
+            e.Add((nameof(p.ExeName), "Program file name is required."));
+        }
+        else if (!IsSafeName(p.ExeName, SafeExe()))
         {
             e.Add((nameof(p.ExeName), "Exe name may only use letters, digits, . _ - (no spaces) and must not end in .exe."));
         }

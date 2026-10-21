@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>BrandStudio</AssemblyName>
+    <RootNamespace>GymPro.BrandStudio</RootNamespace>
+    <Product>Brand Studio</Product>
+    <AssemblyTitle>Brand Studio</AssemblyTitle>
+    <!-- CA1859: RelayCommand methods must return Task. -->
+    <NoWarn>$(NoWarn);CA1859</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GymPro.Core\GymPro.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+</Project>

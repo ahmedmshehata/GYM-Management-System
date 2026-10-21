@@ -79,6 +79,60 @@ Run all commands from the repository root (`C:\UserData\Code\GYM\GymPro`), or ad
 
 Tags with a suffix, such as `v1.3.0-beta.1` or `v2.0.0-rc.1`, are published as **pre-releases**. They're downloadable, but they don't become "Latest" and don't change the download badge. Use them to try a build on one front-desk PC first.
 
+## White-label builds
+
+A *brand pack* describes a reseller's product: `brand.json` + `logo.png` + `app.ico`, in a folder
+(diffable, committable, e.g. `brands/<name>/`) or a single `.brandpack` zip (easy to e-mail).
+`brands/sample` is a complete example.
+
+### 1. Create the brand in Brand Studio
+
+```bash
+dotnet run --project src/GymPro.BrandStudio
+```
+
+Or run `BrandStudio.exe` (pass a pack to open it: `BrandStudio.exe brands\sample`).
+
+| Tab | What you set |
+|---|---|
+| Identity | Product name, short name (dialog captions), login welcome, company, copyright, website, support email/phone, "Powered by GymPro" on/off |
+| Logo & icon | Logo (scaled to 512 px PNG). The `.ico` is generated from it (16 to 256 px), or import your own. Warns when the icon is unreadable at 16 px |
+| Colours & themes | Brand colour (checked against every theme), themes staff may pick, default theme |
+| Data & files | Data folder (`%ProgramData%\<name>`, `%LOCALAPPDATA%\<name>`) and program file name |
+| Output | Apply to an installed app, or build a branded package |
+
+The same validator used by the build runs on every keystroke. Save and build stay disabled until the brand is valid.
+Save with *Save as folder* or *Save as .brandpack*.
+
+### 2. Build a branded package
+
+```powershell
+pwsh tools/publish.ps1 -Brand brands/iron-club            # folder, brand.json or .brandpack
+pwsh tools/publish.ps1 -Brand iron-club.brandpack -Version 1.2.0
+pwsh tools/publish.ps1 -Brand brands/iron-club -IncludeConfigurator   # also ship BrandStudio.exe
+```
+
+Output: `publish\<exeName>\<exeName>.exe` (the brand's file properties and icon), `appsettings.json` with the brand,
+`Branding\logo.png` + `app.ico`, and `publish\<exeName>-<version>-win-x64.zip` + `.sha256`.
+The GymPro-named end-user branding tool is not included.
+
+How it works: the script writes a temporary `.props` file (exe name, Product, Company, Copyright, Description, icon)
+that `GymPro.App.csproj` imports through `$(GymProBrandProps)`. Each brand builds in its own
+`artifacts\brand-<exeName>` folder so it can't affect normal builds. CI builds `brands/sample` on every push and checks
+the exe's file properties.
+
+### 3. Things to know
+
+* **Data folder**: changing it for a gym that already has data doesn't move anything. On start the app finds the
+  database in the old folder, explains how to move it, and stops. Keep `GymPro` for existing installations.
+* **Licence**: About → Licences always shows the GymPro MIT notice and third-party notices, even with "Powered by" off.
+  Don't remove it; the licence requires it.
+* **Code signing** is per reseller and not part of this repo: each reseller needs their own certificate
+  (`signtool sign` on `<exeName>.exe` before zipping) to avoid SmartScreen warnings.
+* **Translations** are out of scope for now. All UI text is still English.
+* **Guard test**: `WhiteLabelGuardTests` fails if any user-visible "GymPro" is hard-coded in the app. Use
+  `Branding.Current.ProductName` / `ShortName` instead.
+
 ## Fixing a mistake
 
 **Tagged the wrong commit, and the release hasn't been created yet** (or you've deleted it on GitHub):

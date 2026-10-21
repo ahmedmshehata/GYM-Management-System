@@ -31,6 +31,20 @@ jobs:
       - name: Test
         run: dotnet test tests/GymPro.Tests --configuration Release --no-build --logger "trx;LogFileName=results.trx"
 
+      - name: White-label smoke test (sample brand)
+        shell: pwsh
+        run: |
+          ./tools/publish.ps1 -Brand brands/sample -SkipTests -OutDir publish-sample
+          $exe = Get-Item publish-sample/SampleFitness/SampleFitness.exe
+          $vi = $exe.VersionInfo
+          if ($vi.ProductName -ne 'Sample Fitness Manager') { throw "ProductName is '$($vi.ProductName)'" }
+          if ($vi.CompanyName -ne 'Sample Fitness Co.') { throw "CompanyName is '$($vi.CompanyName)'" }
+          if (Test-Path publish-sample/SampleFitness/GymPro.Branding.exe) { throw 'GymPro-named tool shipped in a branded package' }
+          $settings = Get-Content publish-sample/SampleFitness/appsettings.json -Raw | ConvertFrom-Json
+          if ($settings.Branding.productName -ne 'Sample Fitness Manager') { throw 'Branding section not applied' }
+          if (-not (Test-Path publish-sample/SampleFitness-*-win-x64.zip)) { throw 'zip missing' }
+          "Branded package OK: $($exe.Name), $($vi.ProductName), $($vi.CompanyName)"
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

@@ -112,7 +112,7 @@ $kind = if ($FrameworkDependent) { 'framework-dependent' } else { 'self-containe
 Write-Host "$display $Version  |  $Runtime  |  $kind  ->  $appDir" -ForegroundColor Green
 
 # A running copy would lock the files we're about to replace.
-if (Get-Process -Name $exeName, GymPro.Branding, GymPro.BrandStudio -ErrorAction SilentlyContinue |
+if (Get-Process -Name $exeName, GymPro.Branding, BrandStudio -ErrorAction SilentlyContinue |
         Where-Object { $_.Path -and $_.Path.StartsWith($appDir, [StringComparison]::OrdinalIgnoreCase) }) {
     throw "$exeName is running from $appDir. Close it first."
 }
@@ -200,7 +200,7 @@ try {
 
     # Anything unexpected means a setting leaked files out of the single-file bundle.
     $expected = if ($brandInfo) {
-        @("$exeName.exe", 'appsettings.json') + $(if ($IncludeConfigurator) { 'GymPro.BrandStudio.exe' })
+        @("$exeName.exe", 'appsettings.json') + $(if ($IncludeConfigurator) { 'BrandStudio.exe' })
     } else {
         @('GymPro.exe', 'GymPro.Branding.exe', 'appsettings.json')
     }
@@ -225,7 +225,7 @@ Get-ChildItem $appDir -Recurse -File |
                   @{ n = 'MB'; e = { [math]::Round($_.Length / 1MB, 1) } } |
     Format-Table -AutoSize | Out-String | Write-Host
 $vi = (Get-Item (Join-Path $appDir "$exeName.exe")).VersionInfo
-Write-Host ("{0} {1} (exe: {2}, company: {3})  ·  {4}  ·  SHA256 {5}  ·  {6:N0}s" -f $vi.ProductName, $Version,
+Write-Host ("{0} {1} (exe: {2}, company: {3})  |  {4}  |  SHA256 {5}  |  {6:N0}s" -f $vi.ProductName, $Version,
     $vi.ProductVersion, $vi.CompanyName, (Split-Path $zip -Leaf), $hash, $sw.Elapsed.TotalSeconds) -ForegroundColor Green
 if ($FrameworkDependent) {
     Write-Host 'Note: target PCs need the .NET 10 Desktop Runtime (x64): https://dotnet.microsoft.com/download/dotnet/10.0' -ForegroundColor Yellow

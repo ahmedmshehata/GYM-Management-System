@@ -46,6 +46,8 @@ Stack: .NET 10 · WPF · EF Core 10 · SQLite · CommunityToolkit.Mvvm. There ar
 | `src/GymPro.Data` | `GymDbContext` (audit + concurrency), migrations, services, `LegacyImporter` |
 | `src/GymPro.App` | The WPF app (`GymPro.exe`). `Theming/Controls.xaml` + `ThemeManager` provide the themes |
 | `src/GymPro.Branding` | WPF tool: logo + title + colour → `appsettings.json` |
+| `src/GymPro.BrandStudio` | Brand Studio (`BrandStudio.exe`): white-label brand packs, preview, apply, branded builds |
+| `brands/sample` | Example brand pack used by CI |
 | `tests/GymPro.Tests` | xUnit v3: rules, audit, multi-user conflicts, lockout, import of the real legacy DBs, branding merge, theme contrast (WCAG AA) |
 
 ## Build and run
@@ -196,6 +198,23 @@ Open **Import legacy data** (Admin) and pick the old `db_at.db`. The old file is
 
 It shows a live preview of the login screen and the exact JSON. Only the `Branding` section is replaced; the rest of the file is kept,
 and the previous file is kept as `appsettings.json.bak`. Restart GymPro to see the change.
+
+## White-label (resell under your own brand)
+
+The app can ship as **another company's product**: their name, logo, icon, colours, support details, data folder and
+program file name. End users see no trace of GymPro except the licence notice in About, which the MIT licence requires.
+
+* **Brand Studio** (`src/GymPro.BrandStudio`, `BrandStudio.exe`) creates a *brand pack* (`brand.json` + `logo.png` +
+  `app.ico`, as a folder or one `.brandpack` file). It shows a live preview using the app's real themes, WCAG contrast
+  checks, and the generated icon at every taskbar size.
+* **Apply without rebuilding**: Brand Studio → Output → *Apply to appsettings.json* rebrands an installed copy (names,
+  logo, colours, support, themes).
+* **Fully branded build** (own `.exe` name, file properties and taskbar icon):
+  `pwsh tools/publish.ps1 -Brand brands/sample`, or the *Build package* button in Brand Studio.
+* Existing installs are safe. The default data folder stays `GymPro`, old `appsettings.json` files keep working, and
+  if a brand moves the data folder the app explains how to move the database instead of starting empty.
+
+Step-by-step guide: [README_DEV.md → White-label builds](README_DEV.md#white-label-builds).
 
 ## Release package
 
