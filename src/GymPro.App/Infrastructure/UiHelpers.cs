@@ -14,7 +14,7 @@ public static class Dialogs
         MessageBox.Show(Application.Current.MainWindow, message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
 
     public static void Info(string message) =>
-        MessageBox.Show(Application.Current.MainWindow, message, "GymPro", MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show(Application.Current.MainWindow, message, Branding.Current.ShortName, MessageBoxButton.OK, MessageBoxImage.Information);
 
     public static bool Confirm(string message) =>
         MessageBox.Show(Application.Current.MainWindow, message, "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;

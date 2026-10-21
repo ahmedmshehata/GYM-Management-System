@@ -1,0 +1,40 @@
+<Window x:Class="GymPro.App.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource Window.Themed}"
+        Width="560" Height="600" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Brush.Header}" Padding="24,20">
+      <DockPanel>
+        <Image x:Name="LogoImage" DockPanel.Dock="Left" Width="64" Height="64" Margin="0,0,16,0" Stretch="Uniform" />
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock x:Name="ProductText" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource Brush.OnHeader}" TextWrapping="Wrap" />
+          <TextBlock x:Name="VersionText" Foreground="{DynamicResource Brush.HeaderMuted}" Margin="0,2,0,0" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="24,0,24,20">
+      <Button Content="Close" IsCancel="True" IsDefault="True" Style="{StaticResource Button.Primary}" Margin="0" />
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Top" Margin="24,18,24,12">
+      <TextBlock x:Name="DescriptionText" Style="{StaticResource Text.Muted}" Margin="0,0,0,8" />
+      <TextBlock x:Name="CompanyText" FontWeight="SemiBold" />
+      <TextBlock x:Name="CopyrightText" Style="{StaticResource Text.Muted}" />
+      <StackPanel x:Name="SupportPanel" Margin="0,12,0,0">
+        <TextBlock Text="Support" Style="{StaticResource Text.H2}" Margin="0,0,0,4" />
+        <TextBlock x:Name="WebsiteLine"><Hyperlink x:Name="WebsiteLink" RequestNavigate="OnNavigate"><Run x:Name="WebsiteRun" /></Hyperlink></TextBlock>
+        <TextBlock x:Name="EmailLine"><Hyperlink x:Name="EmailLink" RequestNavigate="OnNavigate"><Run x:Name="EmailRun" /></Hyperlink></TextBlock>
+        <TextBlock x:Name="PhoneText" />
+      </StackPanel>
+      <TextBlock x:Name="PoweredByText" Style="{StaticResource Text.Caption}" Margin="0,12,0,0" />
+    </StackPanel>
+
+    <DockPanel Margin="24,0,24,16">
+      <TextBlock DockPanel.Dock="Top" Text="Licences" Style="{StaticResource Text.H2}" Margin="0,0,0,6" />
+      <TextBox x:Name="LicenceText" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+               FontFamily="Cascadia Mono, Consolas" FontSize="11.5" VerticalContentAlignment="Top" Padding="8,6" Margin="0" />
+    </DockPanel>
+  </DockPanel>
+</Window>

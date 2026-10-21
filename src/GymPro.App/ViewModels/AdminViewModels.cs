@@ -231,7 +231,7 @@ public sealed partial class ImportViewModel(LegacyImporter importer, PhotoMainte
     {
         if (!Dialogs.Confirm(
                 "Shrink all member photos to 600 px and compact the database?\n\n" +
-                "A full backup is made first, next to the database. Other PCs should close GymPro while this runs. " +
+                "A full backup is made first, next to the database. Other PCs should close the app while this runs. " +
                 "It can take several minutes for thousands of photos."))
         {
             return;

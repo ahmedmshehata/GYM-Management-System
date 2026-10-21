@@ -5,6 +5,7 @@ using GymPro.App.Infrastructure;
 using GymPro.App.Theming;
 using GymPro.App.ViewModels;
 using GymPro.App.Views;
+using GymPro.Core.Branding;
 using GymPro.Core.Configuration;
 using GymPro.Data;
 using GymPro.Data.Services;
@@ -37,12 +38,26 @@ public partial class App : Application
             builder.Logging.AddDebug();
             builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
 
+            // Brand first: every message from here on (even start-up errors) uses the brand's name and folders.
+            var brandingOptions = builder.Configuration.GetSection(BrandingOptions.SectionName).Get<BrandingOptions>() ?? new BrandingOptions();
+            var brand = new Branding(brandingOptions);
+            Branding.Current = brand;
+            EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent, new RoutedEventHandler(ApplyBrandIcon));
+
             var dbOptions = builder.Configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>() ?? new DatabaseOptions();
+            if (DataFolderMoveProblem(dbOptions, brand) is { } problem)
+            {
+                MessageBox.Show(problem, brand.ShortName, MessageBoxButton.OK, MessageBoxImage.Warning);
+                Shutdown(2);
+                return;
+            }
+
+            dbOptions.Path = dbOptions.PathFor(brand.DataFolderName);
             builder.Services.Configure<BrandingOptions>(builder.Configuration.GetSection(BrandingOptions.SectionName));
             builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection(SecurityOptions.SectionName));
             builder.Services.AddSingleton(Options.Create(dbOptions));
             builder.Services.AddGymData(dbOptions);
-            builder.Services.AddSingleton<Branding>();
+            builder.Services.AddSingleton(brand);
             builder.Services.AddSingleton<IImageProcessor, WpfImageProcessor>();
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<CheckInViewModel>();
@@ -55,21 +70,24 @@ public partial class App : Application
 
             await DbInitializer.InitializeAsync(Services.GetRequiredService<IDbContextFactory<GymDbContext>>(), dbOptions);
 
-            // Theme before any window: last theme used on this PC, else the gym's default.
-            var brandingOptions = Services.GetRequiredService<IOptions<BrandingOptions>>().Value;
+            // Theme before any window: last theme used on this PC, else the brand's default (within the brand's allowed themes).
             var local = LocalUiSettings.Load();
-            ThemeManager.Instance.BrandAccent = brandingOptions.AccentColor;
-            ThemeManager.Instance.Apply(local.LastTheme ?? brandingOptions.DefaultTheme, local.LastUseBrandAccent);
+            ThemeManager.Instance.BrandAccent = brand.AccentHex;
+            ThemeManager.Instance.AllowedThemes = brand.AllowedThemes;
+            ThemeManager.Instance.BrandDefaultTheme = brand.DefaultTheme;
+            ThemeManager.Instance.Apply(local.LastTheme ?? brand.DefaultTheme, local.LastUseBrandAccent);
 
-            // Members without a photo show the gym's logo (or the GymPro logo).
-            Resources["Image.MemberPlaceholder"] = Services.GetRequiredService<Branding>().PlaceholderLogo;
+            // Members without a photo show the brand's logo (or the built-in app logo).
+            Resources["Image.MemberPlaceholder"] = brand.PlaceholderLogo;
 
             await ShowLoginAsync();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"GymPro could not start:\n\n{ex.Message}\n\nCheck appsettings.json (Database:Path) and folder permissions.",
-                "GymPro", MessageBoxButton.OK, MessageBoxImage.Error);
+            var brand = Branding.Current;
+            MessageBox.Show($"{brand.ProductName} could not start:\n\n{ex.Message}\n\nCheck appsettings.json (Database:Path) and folder permissions."
+                + (brand.SupportLine is { } support ? "\n\n" + support : ""),
+                brand.ShortName, MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
         }
     }
@@ -97,8 +115,7 @@ public partial class App : Application
         }
 
         // Each staff member's own theme follows them to any PC.
-        var brandingDefault = Services.GetRequiredService<IOptions<BrandingOptions>>().Value.DefaultTheme;
-        ThemeManager.Instance.Apply(login.SignedInUser.ThemeId ?? brandingDefault, login.SignedInUser.UseBrandAccent);
+        ThemeManager.Instance.Apply(login.SignedInUser.ThemeId ?? Branding.Current.DefaultTheme, login.SignedInUser.UseBrandAccent);
 
         var main = new MainWindow(Services.GetRequiredService<MainViewModel>());
         MainWindow = main;
@@ -133,15 +150,36 @@ public partial class App : Application
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         LogCrash(e.Exception);
-        MessageBox.Show("Unexpected error: " + e.Exception.Message, "GymPro", MessageBoxButton.OK, MessageBoxImage.Error);
+        var brand = Branding.Current;
+        MessageBox.Show("Unexpected error: " + e.Exception.Message + (brand.SupportLine is { } support ? "\n\n" + support : ""),
+            brand.ShortName, MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
     }
+
+    /// <summary>Every window gets the brand's icon unless it sets its own.</summary>
+    private static void ApplyBrandIcon(object sender, RoutedEventArgs e)
+    {
+        if (sender is Window { Icon: null } w && Branding.Current.WindowIcon is { } icon)
+        {
+            w.Icon = icon;
+        }
+    }
+
+    /// <summary>Explanation to show when a brand moved the data folder but the database is still in the old one.</summary>
+    private static string? DataFolderMoveProblem(DatabaseOptions configured, Branding brand) =>
+        DataServiceCollectionExtensions.FindDataLeftBehind(configured, brand.DataFolderName, BrandDefaults.DataFolderName) is not { } f
+            ? null
+            : $"{brand.ProductName} keeps its data in:\n{f.NewFolder}\n\n" +
+              $"That folder has no database yet, but an existing one was found in:\n{f.ExistingFolder}\n\n" +
+              "To keep your members, close the app and move gym.db (and any gym.db-wal / gym.db-shm files) to the new folder, " +
+              "or set Database:Path in appsettings.json to the existing file.\n\n" +
+              "The app won't create an empty database here, so your existing data isn't left behind by mistake.";
 
     private static void LogCrash(Exception ex)
     {
         try
         {
-            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GymPro", "logs");
+            var dir = Path.Combine(Branding.Current.LocalDataDirectory, "logs");
             Directory.CreateDirectory(dir);
             File.AppendAllText(Path.Combine(dir, $"error-{DateTime.Now:yyyyMMdd}.log"), $"[{DateTime.Now:O}] {ex}\n\n");
         }

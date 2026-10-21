@@ -20,7 +20,7 @@
           </StackPanel>
           <StackPanel Orientation="Horizontal">
             <TextBlock Text="&#xE7BA;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Warning}" Margin="0,0,10,0" />
-            <TextBlock Text="Back up the GymPro database first." Style="{StaticResource Text.Muted}" VerticalAlignment="Center" />
+            <TextBlock Text="Back up the database first." Style="{StaticResource Text.Muted}" VerticalAlignment="Center" />
           </StackPanel>
         </UniformGrid>
         <DockPanel>

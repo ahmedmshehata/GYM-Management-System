@@ -26,6 +26,12 @@ public sealed partial class ThemeManager
     /// <summary>The gym's brand colour from appsettings.json (Branding:AccentColor).</summary>
     public string? BrandAccent { get; set; }
 
+    /// <summary>Themes the brand offers (Branding:AllowedThemes); empty = all.</summary>
+    public IReadOnlyList<string> AllowedThemes { get; set; } = [];
+
+    /// <summary>The brand's default theme, used when a saved preference isn't allowed.</summary>
+    public string? BrandDefaultTheme { get; set; }
+
     public event EventHandler? ThemeChanged;
 
     private ThemeManager()
@@ -36,7 +42,7 @@ public sealed partial class ThemeManager
 
     public void Apply(string? themeId, bool useBrandAccent)
     {
-        Theme = ThemeCatalog.Find(themeId);
+        Theme = ThemeCatalog.Pick(themeId, AllowedThemes, BrandDefaultTheme); // a saved preference can't escape the brand's list
         UseBrandAccent = useBrandAccent;
         _resolved = ThemeResolver.Resolve(Theme, useBrandAccent ? BrandAccent : null);
 
@@ -157,8 +163,8 @@ public sealed record LocalUiSettings(
     string? LastCameraId = null,
     bool MemberCards = false)
 {
-    private static readonly string FilePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GymPro", "ui.json");
+    // Per brand: %LOCALAPPDATA%\<data folder>\ui.json
+    private static string FilePath => Path.Combine(GymPro.App.Infrastructure.Branding.Current.LocalDataDirectory, "ui.json");
 
     public static LocalUiSettings Load()
     {

@@ -4,7 +4,7 @@
         xmlns:v="clr-namespace:GymPro.App.Views"
         xmlns:vm="clr-namespace:GymPro.App.ViewModels"
         Style="{StaticResource Window.Themed}"
-        Title="{Binding Branding.Title}" Icon="{Binding Branding.Logo}"
+        Title="{Binding Branding.ProductName}" Icon="{Binding Branding.WindowIcon}"
         Width="1280" Height="800" MinWidth="980" MinHeight="620" WindowStartupLocation="CenterScreen">
 
   <Window.Resources>
@@ -54,6 +54,9 @@
             <TextBlock Text="{Binding UserName}" Foreground="{DynamicResource Brush.OnHeader}" FontWeight="SemiBold" />
             <TextBlock Text="{Binding RoleText}" Foreground="{DynamicResource Brush.HeaderMuted}" FontSize="11" />
           </StackPanel>
+          <Button Style="{StaticResource Button.Header}" Click="OnAbout" ToolTip="About" MinHeight="40">
+            <TextBlock Text="&#xE946;" Style="{StaticResource Text.Icon}" />
+          </Button>
           <Button Style="{StaticResource Button.Header}" Click="OnChangePassword" ToolTip="Change password" MinHeight="40">
             <TextBlock Text="&#xE8D7;" Style="{StaticResource Text.Icon}" />
           </Button>

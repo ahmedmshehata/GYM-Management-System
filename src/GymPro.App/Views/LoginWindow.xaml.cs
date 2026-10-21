@@ -16,11 +16,15 @@ public partial class LoginWindow : Window
         _auth = auth;
         _firstRun = firstRun;
 
-        Title = branding.Title;
-        TitleText.Text = branding.Title;
+        Title = branding.ProductName;
+        TitleText.Text = branding.ProductName;
         LogoImage.Source = branding.Logo;
-        Icon = branding.Logo;
+        Icon = branding.WindowIcon;
         LogoImage.Visibility = branding.Logo is null ? Visibility.Collapsed : Visibility.Visible;
+        if (branding.LoginWelcome is { } welcome)
+        {
+            SubtitleText.Text = welcome;
+        }
 
         if (firstRun)
         {

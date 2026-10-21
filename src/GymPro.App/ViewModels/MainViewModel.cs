@@ -136,7 +136,7 @@ public sealed partial class MainViewModel : ObservableObject
         _loadingTheme = true;
         var brand = UseBrandAccent ? ThemeManager.Instance.BrandAccent : null;
         Themes.Clear();
-        foreach (var t in ThemeCatalog.All)
+        foreach (var t in ThemeCatalog.Allowed(Branding.AllowedThemes)) // the brand may offer only some themes
         {
             Themes.Add(new ThemeOption(t,
                 ThemeManager.Swatch(t, "Header", brand), ThemeManager.Swatch(t, "Nav", brand), ThemeManager.Swatch(t, "Window", brand),

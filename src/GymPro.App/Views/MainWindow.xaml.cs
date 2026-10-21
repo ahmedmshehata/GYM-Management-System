@@ -63,6 +63,9 @@ public partial class MainWindow : Window
 
     private void OnToggleThemes(object sender, RoutedEventArgs e) => ThemePopup.IsOpen = !ThemePopup.IsOpen;
 
+    private void OnAbout(object sender, RoutedEventArgs e) =>
+        new AboutWindow(_vm.Branding) { Owner = this }.ShowDialog();
+
     private void OnChangePassword(object sender, RoutedEventArgs e)
     {
         var ok = new ChangePasswordWindow(App.Services.GetRequiredService<AuthService>(), mustChange: false) { Owner = this }.ShowDialog();

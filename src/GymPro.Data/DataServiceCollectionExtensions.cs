@@ -28,6 +28,26 @@ public static class DataServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// A brand that moves the data folder (Branding:DataFolderName) must not silently start with an empty database
+    /// while the members still live in the default folder. Returns both folders when that would happen, else null.
+    /// Only applies when Database:Path uses the {DataFolder} placeholder; an explicit path is taken as-is.
+    /// </summary>
+    public static (string NewFolder, string ExistingFolder)? FindDataLeftBehind(DatabaseOptions configured, string dataFolderName, string defaultFolderName)
+    {
+        if (!configured.Path.Contains(DatabaseOptions.DataFolderToken, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(dataFolderName, defaultFolderName, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var target = ResolvePath(new DatabaseOptions { Path = configured.PathFor(dataFolderName) });
+        var existing = ResolvePath(new DatabaseOptions { Path = configured.PathFor(defaultFolderName) });
+        return File.Exists(target) || !File.Exists(existing)
+            ? null
+            : (Path.GetDirectoryName(target)!, Path.GetDirectoryName(existing)!);
+    }
+
     public static string ResolvePath(DatabaseOptions db)
     {
         var path = Environment.ExpandEnvironmentVariables(db.Path);
