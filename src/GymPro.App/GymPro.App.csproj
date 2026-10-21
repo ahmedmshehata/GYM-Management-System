@@ -26,4 +26,9 @@
     <Resource Include="Assets\app-logo.png" />
     <Resource Include="Assets\GymPro.ico" />
   </ItemGroup>
+  <!--
+    White-label builds: tools/publish.ps1 -Brand <pack> generates a .props file (exe name, file properties, icon)
+    and passes its path here. Normal builds don't set it, so nothing changes.
+  -->
+  <Import Project="$(GymProBrandProps)" Condition="'$(GymProBrandProps)' != '' And Exists('$(GymProBrandProps)')" />
 </Project>

@@ -9,3 +9,4 @@ TestResults/
 publish/
 *.bak
 *.tmp
+artifacts/

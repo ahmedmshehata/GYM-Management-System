@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "productName": "Sample Fitness Manager",
+  "shortName": "Sample Fitness",
+  "companyName": "Sample Fitness Co.",
+  "copyright": "Copyright (c) 2026 Sample Fitness Co.",
+  "description": "Membership and check-in for Sample Fitness clubs",
+  "websiteUrl": "https://example.com",
+  "supportEmail": "support@example.com",
+  "supportPhone": "+1 555 0100",
+  "loginWelcome": "Welcome to Sample Fitness",
+  "showPoweredBy": true,
+  "logoPath": "logo.png",
+  "iconPath": "app.ico",
+  "accentColor": "#0D9488",
+  "defaultTheme": "material-light",
+  "allowedThemes": ["material-light", "material-dark", "high-contrast"],
+  "dataFolderName": "SampleFitness",
+  "exeName": "SampleFitness"
+}
