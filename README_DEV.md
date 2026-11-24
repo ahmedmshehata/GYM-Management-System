@@ -30,7 +30,7 @@ GitHub then builds `GymPro-1.0.0-win-x64.zip` with its checksum and publishes it
 
 ## Releasing a new version
 
-Run all commands from the repository root (`C:\UserData\Code\GYM\GymPro`), or add `-C <path>` to each `git` command.
+Run all commands from the repository root (the folder containing `GymPro.slnx`), or add `-C <path>` to each `git` command.
 
 1. **Pick the version number** ([semantic versioning](https://semver.org)):
 
